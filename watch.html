@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NOBAR LIVE</title>
+
+<link rel="stylesheet" href="css/watch.css">
+
+</head>
+<body>
+
+<div class="player-wrapper">
+
+    <video
+        id="player"
+        autoplay
+        playsinline
+        preload="auto">
+    </video>
+
+    <div class="overlay-top">
+
+        <div class="brand">
+            🎬 NOBAR LIVE
+        </div>
+
+        <div class="live-badge">
+            ● LIVE
+        </div>
+
+    </div>
+
+    <div class="loading" id="loading">
+
+        <div class="spinner"></div>
+
+        <p>
+            Menunggu Siaran...
+        </p>
+
+    </div>
+
+</div>
+
+<div class="status">
+
+    <span id="statusText">
+        Menunggu Broadcast
+    </span>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script type="module" src="js/watch.js"></script>
+
+</body>
+</html>

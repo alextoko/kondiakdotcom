@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NOBAR CONTROL ROOM</title>
+
+<link rel="stylesheet" href="css/host.css">
+
+</head>
+<body>
+
+<header class="header">
+
+    <div class="logo">
+        🎬 NOBAR CONTROL ROOM
+    </div>
+
+    <div class="live-indicator">
+        ● SYSTEM ONLINE
+    </div>
+
+</header>
+
+<main class="main">
+
+    <!-- PANEL PREVIEW -->
+
+    <aside class="left">
+
+        <div class="section-title">
+            MULTIVIEW PREVIEW
+        </div>
+
+        <div class="preview-grid">
+
+            <!-- TRAILER -->
+
+            <div
+                class="preview active"
+                onclick="selectVideo(
+                    this,
+                    'https://vz-685584a0-ec9.b-cdn.net/1578ae86-fdfa-4d81-ac38-3a61da5c7564/playlist.m3u8',
+                    'Trailer',
+                    'trailer'
+                )">
+
+                <img
+                    src="https://vz-685584a0-ec9.b-cdn.net/1578ae86-fdfa-4d81-ac38-3a61da5c7564/thumbnail.jpg"
+                    alt="Trailer">
+
+                <div class="preview-name">
+                    Trailer
+                </div>
+
+            </div>
+
+            <!-- FILM -->
+
+            <div
+                class="preview"
+                onclick="selectVideo(
+                    this,
+                    'https://vz-685584a0-ec9.b-cdn.net/628decdf-29f3-4abc-b083-90f3a16bcad2/playlist.m3u8',
+                    'Film',
+                    'movie'
+                )">
+
+                <img
+                    src="https://vz-685584a0-ec9.b-cdn.net/628decdf-29f3-4abc-b083-90f3a16bcad2/thumbnail.jpg"
+                    alt="Film">
+
+                <div class="preview-name">
+                    Film
+                </div>
+
+            </div>
+
+            <!-- IKLAN 1 -->
+
+            <div
+                class="preview"
+                onclick="selectVideo(
+                    this,
+                    'https://samplelib.com/lib/preview/mp4/sample-5s.mp4',
+                    'Iklan 1',
+                    'ads'
+                )">
+
+                <img
+                    src="https://picsum.photos/400/220?random=1"
+                    alt="Iklan 1">
+
+                <div class="preview-name">
+                    Iklan 1
+                </div>
+
+            </div>
+
+            <!-- IKLAN 2 -->
+
+            <div
+                class="preview"
+                onclick="selectVideo(
+                    this,
+                    'https://samplelib.com/lib/preview/mp4/sample-10s.mp4',
+                    'Iklan 2',
+                    'ads'
+                )">
+
+                <img
+                    src="https://picsum.photos/400/220?random=2"
+                    alt="Iklan 2">
+
+                <div class="preview-name">
+                    Iklan 2
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="selected-label">
+
+            PREVIEW TERPILIH :
+            <span id="selectedName">
+                Trailer
+            </span>
+
+        </div>
+
+    </aside>
+
+    <!-- PROGRAM OUTPUT -->
+
+    <section class="right">
+
+        <div class="section-title">
+            PROGRAM OUTPUT
+        </div>
+
+        <div class="program-container">
+
+            <div class="onair">
+                ● ON AIR
+            </div>
+
+            <video
+                id="programVideo"
+                controls
+                playsinline>
+            </video>
+
+        </div>
+
+        <!-- CONTROL -->
+
+        <div class="controls">
+
+            <button
+                class="take"
+                onclick="takeProgram()">
+                TAKE
+            </button>
+
+            <button
+                class="play"
+                onclick="playProgram()">
+                PLAY
+            </button>
+
+            <button
+                class="pause"
+                onclick="pauseProgram()">
+                PAUSE
+            </button>
+
+            <button
+                class="stop"
+                onclick="stopProgram()">
+                STOP
+            </button>
+
+        </div>
+
+        <!-- STATUS -->
+
+        <div class="status-bar">
+
+            <div>
+                ON AIR :
+                <span id="liveTitle">
+                    -
+                </span>
+            </div>
+
+            <div>
+                SELECTED :
+                <span id="currentType">
+                    Trailer
+                </span>
+            </div>
+
+            <div>
+                STATUS :
+                <span class="green">
+                    LIVE
+                </span>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script type="module" src="js/host.js"></script>
+
+</body>
+</html>
