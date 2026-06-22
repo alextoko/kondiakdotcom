@@ -1,222 +1,261 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>NOBAR CONTROL ROOM</title>
+<title>KONDIAKDOTCOM</title>
 
-<link rel="stylesheet" href="css/host.css">
+<link rel="stylesheet" href="index.css">
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<header class="header">
+<div class="app">
 
-    <div class="logo">
-        🎬 NOBAR CONTROL ROOM
+    <div class="header">
+
+        <div class="logo">
+            <div class="menu">☰</div>
+            <h1>KONDIAK<span>DOTCOM</span></h1>
+        </div>
+
+        <div class="header-right">
+
+            <div class="info-box live-box">
+                <div class="live">
+                    <div class="live-dot"></div>
+                    LIVE
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-title">ROOM</div>
+                <div id="roomId" class="info-value">#2451</div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-title">VIEWERS</div>
+                <div id="viewerCount" class="info-value">0</div>
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="live-indicator">
-        ● SYSTEM ONLINE
+    <div class="video-grid">
+
+    <div class="monitor-card">
+
+        <div class="program-overlay">
+            🟢 PREVIEW
+        </div>
+
+        <video
+            id="previewPlayer"
+            autoplay
+            muted
+            playsinline>
+        </video>
+
+        <div class="preview-controls">
+
+            <button id="previewBack">
+                ⏪ 10s
+            </button>
+
+            <button id="previewPlay">
+                ▶
+            </button>
+
+            <button id="previewPause">
+                ⏸
+            </button>
+
+            <button id="previewStop">
+                ⏹
+            </button>
+
+            <button id="previewForward">
+                ⏩ 10s
+            </button>
+
+        </div>
+
     </div>
 
-</header>
+    <div class="take-container">
 
-<main class="main">
+        <button
+            id="takeBtn"
+            class="take-btn">
+            TAKE →
+        </button>
 
-    <!-- PANEL PREVIEW -->
+    </div>
 
-    <aside class="left">
+    <div class="monitor-card live-monitor">
 
-        <div class="section-title">
-            MULTIVIEW PREVIEW
-        </div>
-
-        <div class="preview-grid">
-
-            <!-- TRAILER -->
-
-            <div
-                class="preview active"
-                onclick="selectVideo(
-                    this,
-                    'https://vz-685584a0-ec9.b-cdn.net/1578ae86-fdfa-4d81-ac38-3a61da5c7564/playlist.m3u8',
-                    'Trailer',
-                    'trailer'
-                )">
-
-                <img
-                    src="https://vz-685584a0-ec9.b-cdn.net/1578ae86-fdfa-4d81-ac38-3a61da5c7564/thumbnail.jpg"
-                    alt="Trailer">
-
-                <div class="preview-name">
-                    Trailer
-                </div>
-
-            </div>
-
-            <!-- FILM -->
-
-            <div
-                class="preview"
-                onclick="selectVideo(
-                    this,
-                    'https://vz-685584a0-ec9.b-cdn.net/628decdf-29f3-4abc-b083-90f3a16bcad2/playlist.m3u8',
-                    'Film',
-                    'movie'
-                )">
-
-                <img
-                    src="https://vz-685584a0-ec9.b-cdn.net/628decdf-29f3-4abc-b083-90f3a16bcad2/thumbnail.jpg"
-                    alt="Film">
-
-                <div class="preview-name">
-                    Film
-                </div>
-
-            </div>
-
-            <!-- IKLAN 1 -->
-
-            <div
-                class="preview"
-                onclick="selectVideo(
-                    this,
-                    'https://samplelib.com/lib/preview/mp4/sample-5s.mp4',
-                    'Iklan 1',
-                    'ads'
-                )">
-
-                <img
-                    src="https://picsum.photos/400/220?random=1"
-                    alt="Iklan 1">
-
-                <div class="preview-name">
-                    Iklan 1
-                </div>
-
-            </div>
-
-            <!-- IKLAN 2 -->
-
-            <div
-                class="preview"
-                onclick="selectVideo(
-                    this,
-                    'https://samplelib.com/lib/preview/mp4/sample-10s.mp4',
-                    'Iklan 2',
-                    'ads'
-                )">
-
-                <img
-                    src="https://picsum.photos/400/220?random=2"
-                    alt="Iklan 2">
-
-                <div class="preview-name">
-                    Iklan 2
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="selected-label">
-
-            PREVIEW TERPILIH :
-            <span id="selectedName">
-                Trailer
-            </span>
-
-        </div>
-
-    </aside>
-
-    <!-- PROGRAM OUTPUT -->
-
-    <section class="right">
-
-        <div class="section-title">
-            PROGRAM OUTPUT
-        </div>
-
-        <div class="program-container">
-
-            <div class="onair">
-                ● ON AIR
+            <div class="program-overlay">
+                🔴 PROGRAM OUTPUT
             </div>
 
             <video
-                id="programVideo"
-                controls
+                id="programPlayer"
+                autoplay
+                muted
                 playsinline>
             </video>
 
-        </div>
+            <div class="live-controls">
 
-        <!-- CONTROL -->
+                <button id="liveBack">
+                    ⏪ 10s
+                </button>
 
-        <div class="controls">
+                <button id="livePlay">
+                    ▶
+                </button>
 
-            <button
-                class="take"
-                onclick="takeProgram()">
-                TAKE
-            </button>
+                <button id="livePause">
+                    ⏸
+                </button>
 
-            <button
-                class="play"
-                onclick="playProgram()">
-                PLAY
-            </button>
+                <button id="liveStop">
+                    ⏹
+                </button>
 
-            <button
-                class="pause"
-                onclick="pauseProgram()">
-                PAUSE
-            </button>
+                <button id="liveForward">
+                    ⏩ 10s
+                </button>
 
-            <button
-                class="stop"
-                onclick="stopProgram()">
-                STOP
-            </button>
-
-        </div>
-
-        <!-- STATUS -->
-
-        <div class="status-bar">
-
-            <div>
-                ON AIR :
-                <span id="liveTitle">
-                    -
-                </span>
-            </div>
-
-            <div>
-                SELECTED :
-                <span id="currentType">
-                    Trailer
-                </span>
-            </div>
-
-            <div>
-                STATUS :
-                <span class="green">
-                    LIVE
-                </span>
             </div>
 
         </div>
 
-    </section>
+    </div>
 
-</main>
+    <div class="bottom">
+
+        <div class="card">
+
+            <div class="url-box">
+
+                <input
+                    id="inputUrl"
+                    type="text"
+                    placeholder="Paste M3U8 URL lalu tekan Enter">
+
+            </div>
+
+            <div class="section-title">
+                🎬 INPUT SOURCES
+            </div>
+
+            <div class="inputs">
+
+                <div class="input-card active" data-input="0">
+                    <div class="thumb">
+                        <span class="preview-tag">INPUT 1</span>
+                        <img id="preview1" src="https://picsum.photos/400/250?1">
+                    </div>
+                    <div class="input-name">Input 1</div>
+                    <div class="status">🔴 ON AIR</div>
+                </div>
+
+                <div class="input-card" data-input="1">
+                    <div class="thumb">
+                        <span class="preview-tag">INPUT 2</span>
+                        <img id="preview2" src="https://picsum.photos/400/250?2">
+                    </div>
+                    <div class="input-name">Input 2</div>
+                    <div class="status">Ready</div>
+                </div>
+
+                <div class="input-card" data-input="2">
+                    <div class="thumb">
+                        <span class="preview-tag">INPUT 3</span>
+                        <img id="preview3" src="https://picsum.photos/400/250?3">
+                    </div>
+                    <div class="input-name">Input 3</div>
+                    <div class="status">Trailer</div>
+                </div>
+
+                <div class="input-card" data-input="3">
+                    <div class="thumb">
+                        <span class="preview-tag">INPUT 4</span>
+                        <img id="preview4" src="https://picsum.photos/400/250?4">
+                    </div>
+                    <div class="input-name">Input 4</div>
+                    <div class="status">Ads</div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="section-title">
+                👥 ROOM INFO
+            </div>
+
+            <div class="room-table">
+
+                <div class="row">
+                    <span class="label">Broadcast</span>
+                    <span id="broadcastStatus" class="value red">
+                        OFF AIR
+                    </span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Current Input</span>
+                    <span id="currentInput" class="value">
+                        Input 1
+                    </span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Room</span>
+                    <span class="value">#2451</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Host</span>
+                    <span class="value green">Connected</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Sync</span>
+                    <span class="value green">Active</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="controls">
+
+    <button id="onAirBtn" class="btn btn-air">
+        🔴 ON AIR
+    </button>
+
+    <button id="fullscreenBtn" class="btn">
+        ⛶ FULLSCREEN
+    </button>
+
+</div>
+
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<script type="module" src="js/host.js"></script>
+
+<script type="module" src="index.js"></script>
+<script type="module" src="host.js"></script>
 
 </body>
 </html>

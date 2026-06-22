@@ -6,398 +6,547 @@ import {
     update
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* =====================================
-   GLOBAL
-===================================== */
+const ROOM_ID = "2451";
 
-const programVideo =
-document.getElementById("programVideo");
+const player = document.getElementById("programPlayer");
+const previewPlayer =
+document.getElementById("previewPlayer");
 
-const selectedName =
-document.getElementById("selectedName");
+const takeBtn =
+document.getElementById("takeBtn");
 
-const currentTypeLabel =
-document.getElementById("currentType");
+let previewInput = 0;
+let liveInput = 0;
 
-const liveTitle =
-document.getElementById("liveTitle");
+let previewHls = null;
+let programHls = null;
 
-let selectedVideo = "";
-let selectedType = "";
+const inputUrl = document.getElementById("inputUrl");
 
-let currentType = "";
 
-let movieUrl = "";
-let moviePosition = 0;
+const onAirBtn = document.getElementById("onAirBtn");
+const playBtn = document.getElementById("playBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+const stopBtn = document.getElementById("stopBtn");
+const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+const currentInputText =
+document.getElementById("currentInput");
+
+const broadcastStatus =
+document.getElementById("broadcastStatus");
 
 let hls = null;
 
-/* =====================================
-   HLS / MP4 LOADER
-===================================== */
+let activeInput = 0;
 
-function loadVideo(url){
+/*
+|--------------------------------------------------------------------------
+| INPUT SOURCES
+|--------------------------------------------------------------------------
+|
+| Ganti URL sesuai channel m3u8 Anda
+|
+*/
+
+const inputs = [
+
+    "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+
+    "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+
+    "https://vz-685584a0-ec9.b-cdn.net/628decdf-29f3-4abc-b083-90f3a16bcad2/playlist.m3u8",
+
+    "https://test-streams.mux.dev/dai-discontinuity-deltatre/manifest.m3u8"
+
+];
+
+/*
+|--------------------------------------------------------------------------
+| LOAD STREAM
+|--------------------------------------------------------------------------
+*/
+
+function loadStream(url){
+
+    if(!url) return;
 
     if(hls){
 
         hls.destroy();
+
         hls = null;
 
     }
 
-    if(url.endsWith(".m3u8")){
+    if(Hls.isSupported()){
 
-        if(window.Hls && Hls.isSupported()){
+        hls = new Hls({
+            enableWorker:true,
+            lowLatencyMode:true
+        });
 
-            hls = new Hls({
-                enableWorker:true,
-                lowLatencyMode:true
-            });
+        hls.loadSource(url);
 
-            hls.loadSource(url);
-            hls.attachMedia(programVideo);
+        hls.attachMedia(player);
 
-        }
-        else{
+        hls.on(Hls.Events.MANIFEST_PARSED,()=>{
 
-            programVideo.src = url;
+            player.play()
+            .catch(err=>console.log(err));
 
-        }
+        });
+
+    }else if(
+        player.canPlayType(
+            "application/vnd.apple.mpegurl"
+        )
+    ){
+
+        player.src = url;
+
+        player.addEventListener(
+            "loadedmetadata",
+            ()=>{
+
+                player.play();
+
+            }
+        );
 
     }else{
 
-        programVideo.src = url;
+        alert("Browser tidak mendukung HLS");
 
     }
+
 }
 
-/* =====================================
-   FIREBASE UPDATE
-===================================== */
+function loadPreview(url){
 
-async function sendBroadcast(
-    url,
-    playing,
-    currentTime,
-    type
-){
+    if(previewHls){
 
-    await set(
-        ref(db,"broadcast"),
-        {
-            activeVideo:url,
-            playing,
-            currentTime,
-            type,
-            updatedAt:Date.now()
-        }
-    );
-}
+        previewHls.destroy();
 
-/* =====================================
-   PLAY PROGRAM
-===================================== */
+        previewHls = null;
 
-async function playProgramSource(
-    url,
-    position,
-    type,
-    title
-){
+    }
 
-    currentType = type;
+    if(Hls.isSupported()){
 
-    loadVideo(url);
+        previewHls = new Hls();
 
-    programVideo.addEventListener(
-        "loadedmetadata",
-        ()=>{
+        previewHls.loadSource(url);
 
-            if(position > 0){
+        previewHls.attachMedia(
+            previewPlayer
+        );
 
-                programVideo.currentTime =
-                position;
+        previewHls.on(
+            Hls.Events.MANIFEST_PARSED,
+            ()=>{
+
+                previewPlayer.play();
 
             }
-
-        },
-        { once:true }
-    );
-
-    liveTitle.textContent =
-    title;
-
-    try{
-
-        await programVideo.play();
-
-    }catch(err){
-
-        console.error(err);
+        );
 
     }
 
-    await sendBroadcast(
-        url,
-        true,
-        position,
-        type
-    );
 }
 
-/* =====================================
-   SELECT PREVIEW
-===================================== */
+/*
+|--------------------------------------------------------------------------
+| UPDATE ACTIVE INPUT
+|--------------------------------------------------------------------------
+*/
 
-window.selectVideo = (
-    card,
-    url,
-    name,
-    type
-)=>{
+function setPreviewInput(index){
+
+    previewInput = index;
 
     document
-        .querySelectorAll(".preview")
-        .forEach(item =>
-            item.classList.remove("active")
+    .querySelectorAll(".input-card")
+    .forEach(card=>{
+
+        card.classList.remove("active");
+
+    });
+
+    document
+    .querySelector(
+        `.input-card[data-input="${index}"]`
+    )
+    ?.classList.add("active");
+
+    currentInputText.textContent =
+    `Preview Input ${index+1}`;
+
+    loadPreview(
+        inputs[index]
+    );
+
+}
+
+/*
+|--------------------------------------------------------------------------
+| INPUT CLICK
+|--------------------------------------------------------------------------
+*/
+
+document
+.querySelectorAll(".input-card")
+.forEach(card=>{
+
+    card.addEventListener("click",()=>{
+
+        const index =
+        parseInt(card.dataset.input);
+
+        setPreviewInput(index);
+
+    });
+
+});
+
+takeBtn.addEventListener(
+    "click",
+    async()=>{
+
+        liveInput =
+        previewInput;
+
+        loadStream(
+            inputs[liveInput]
         );
 
-    card.classList.add("active");
+        currentInputText.textContent =
+        `Input ${liveInput+1}`;
 
-    selectedVideo = url;
-    selectedType = type;
+        await update(
+            ref(
+                db,
+                `rooms/${ROOM_ID}`
+            ),
+            {
 
-    if(type === "movie"){
+                activeInput:
+                liveInput,
 
-        movieUrl = url;
+                activeVideo:
+                inputs[liveInput],
 
-    }
+                updatedAt:
+                Date.now()
 
-    selectedName.textContent =
-    name;
-
-    currentTypeLabel.textContent =
-    name;
-};
-
-/* =====================================
-   TAKE
-===================================== */
-
-window.takeProgram = async ()=>{
-
-    if(!selectedVideo) return;
-
-    if(
-        currentType === "movie" &&
-        !programVideo.paused
-    ){
-
-        moviePosition =
-        programVideo.currentTime;
-
-    }
-
-    if(selectedType === "movie"){
-
-        await playProgramSource(
-            selectedVideo,
-            moviePosition,
-            "movie",
-            "Film"
+            }
         );
 
-        return;
     }
+);
 
-    await playProgramSource(
-        selectedVideo,
-        0,
-        selectedType,
-        selectedName.textContent
-    );
-};
+/*
+|--------------------------------------------------------------------------
+| LOAD CUSTOM URL
+|--------------------------------------------------------------------------
+*/
+inputUrl.addEventListener(
+    "keydown",
+    (e)=>{
 
-/* =====================================
-   PLAY
-===================================== */
+        if(e.key !== "Enter") return;
 
-window.playProgram = async ()=>{
+        const url =
+        inputUrl.value.trim();
 
-    try{
+        if(!url) return;
 
-        await programVideo.play();
-
-    }catch(err){
-
-        console.error(err);
+        loadStream(url);
 
     }
+);
 
-    await update(
-        ref(db,"broadcast"),
-        {
-            playing:true,
-            updatedAt:Date.now()
-        }
-    );
-};
+/*
+|--------------------------------------------------------------------------
+| PLAY
+|--------------------------------------------------------------------------
+*/
 
-/* =====================================
-   PAUSE
-===================================== */
+playBtn?.addEventListener(
+    "click",
+    async()=>{
 
-window.pauseProgram = async ()=>{
+        await player.play();
 
-    programVideo.pause();
-
-    await update(
-        ref(db,"broadcast"),
-        {
-            playing:false,
-            updatedAt:Date.now()
-        }
-    );
-};
-
-/* =====================================
-   STOP
-===================================== */
-
-window.stopProgram = async ()=>{
-
-    programVideo.pause();
-
-    if(hls){
-
-        hls.destroy();
-        hls = null;
+        await update(
+            ref(db,`rooms/${ROOM_ID}`),
+            {
+                playing:true,
+                updatedAt:Date.now()
+            }
+        );
 
     }
+);
 
-    programVideo.removeAttribute("src");
-    programVideo.load();
+/*
+|--------------------------------------------------------------------------
+| PAUSE
+|--------------------------------------------------------------------------
+*/
 
-    currentType = "";
+pauseBtn?.addEventListener(
+    "click",
+    async()=>{
 
-    await update(
-        ref(db,"broadcast"),
-        {
-            playing:false,
-            currentTime:0,
-            updatedAt:Date.now()
+        player.pause();
+
+        await update(
+            ref(db,`rooms/${ROOM_ID}`),
+            {
+                playing:false,
+                updatedAt:Date.now()
+            }
+        );
+
+    }
+);
+
+/*
+|--------------------------------------------------------------------------
+| STOP
+|--------------------------------------------------------------------------
+*/
+
+stopBtn?.addEventListener(
+    "click",
+    async()=>{
+
+        player.pause();
+
+        player.currentTime = 0;
+
+        await update(
+            ref(db,`rooms/${ROOM_ID}`),
+            {
+                playing:false,
+                currentTime:0,
+                updatedAt:Date.now()
+            }
+        );
+
+    }
+);
+
+/*
+|--------------------------------------------------------------------------
+| FULLSCREEN
+|--------------------------------------------------------------------------
+*/
+
+fullscreenBtn?.addEventListener(
+    "click",
+    ()=>{
+
+        if(!document.fullscreenElement){
+
+            document.documentElement
+            .requestFullscreen();
+
+        }else{
+
+            document.exitFullscreen();
+
         }
-    );
-};
 
-/* =====================================
-   CURRENT TIME SYNC
-===================================== */
+    }
+);
+
+/*
+|--------------------------------------------------------------------------
+| ON AIR
+|--------------------------------------------------------------------------
+*/
+
+onAirBtn?.addEventListener(
+    "click",
+    async()=>{
+
+        const payload = {
+
+            roomId:ROOM_ID,
+
+            activeInput,
+
+            activeVideo:
+            inputs[activeInput],
+
+            playing:
+            !player.paused,
+
+            currentTime:
+            player.currentTime,
+
+            status:"ON_AIR",
+
+            updatedAt:
+            Date.now()
+
+        };
+
+        await set(
+            ref(db,`rooms/${ROOM_ID}`),
+            payload
+        );
+
+        broadcastStatus.textContent =
+        "ON AIR";
+
+        broadcastStatus.classList
+        .remove("red");
+
+        broadcastStatus.classList
+        .add("green");
+
+        console.log(
+            "Broadcast ON AIR",
+            payload
+        );
+
+    }
+);
+
+/*
+|--------------------------------------------------------------------------
+| SYNC POSITION
+|--------------------------------------------------------------------------
+*/
 
 setInterval(async()=>{
 
-    if(
-        !programVideo.src ||
-        programVideo.paused
-    ) return;
+    if(player.paused) return;
 
-    if(currentType === "movie"){
+    try{
 
-        moviePosition =
-        programVideo.currentTime;
+        await update(
+            ref(db,`rooms/${ROOM_ID}`),
+            {
+
+                currentTime:
+                player.currentTime,
+
+                playing:true,
+
+                updatedAt:
+                Date.now()
+
+            }
+        );
+
+    }catch(err){
+
+        console.error(err);
 
     }
 
+},500);
+
+/*
+|--------------------------------------------------------------------------
+| AUTO LOAD INPUT 1
+|--------------------------------------------------------------------------
+*/
+
+setPreviewInput(0);
+
+loadStream(inputs[0]);
+
+console.log(
+    "HOST READY"
+);
+
+document
+.getElementById("previewPlay")
+.onclick = () =>
+previewPlayer.play();
+
+document
+.getElementById("previewPause")
+.onclick = () =>
+previewPlayer.pause();
+
+document
+.getElementById("previewBack")
+.onclick = () =>
+previewPlayer.currentTime -= 10;
+
+document
+.getElementById("previewForward")
+.onclick = () =>
+previewPlayer.currentTime += 10;
+
+document
+.getElementById("livePlay")
+.onclick = async()=>{
+
+    player.play();
+
     await update(
-        ref(db,"broadcast"),
+        ref(db,`rooms/${ROOM_ID}`),
         {
+            playing:true,
             currentTime:
-            programVideo.currentTime
+            player.currentTime
         }
     );
 
-},2000);
+};
 
-/* =====================================
-   AUTO NEXT
-===================================== */
+document
+.getElementById("livePause")
+.onclick = async()=>{
 
-programVideo.addEventListener(
-    "ended",
-    async()=>{
+    player.pause();
 
-        if(!movieUrl) return;
-
-        /* TRAILER → FILM */
-
-        if(currentType === "trailer"){
-
-            await playProgramSource(
-                movieUrl,
-                0,
-                "movie",
-                "Film"
-            );
-
-            return;
+    await update(
+        ref(db,`rooms/${ROOM_ID}`),
+        {
+            playing:false,
+            currentTime:
+            player.currentTime
         }
+    );
 
-        /* IKLAN → FILM */
+};
 
-        if(currentType === "ads"){
+document
+.getElementById("liveBack")
+.onclick = async()=>{
 
-            await playProgramSource(
-                movieUrl,
-                moviePosition,
-                "movie",
-                "Film"
-            );
+    player.currentTime -= 10;
 
+    await update(
+        ref(db,`rooms/${ROOM_ID}`),
+        {
+            currentTime:
+            player.currentTime
         }
+    );
 
-    }
-);
+};
 
-/* =====================================
-   AUTOPLAY PREVIEW
-===================================== */
+document
+.getElementById("liveForward")
+.onclick = async()=>{
 
-window.addEventListener(
-    "load",
-    ()=>{
+    player.currentTime += 10;
 
-        document
-            .querySelectorAll(
-                ".preview video"
-            )
-            .forEach(video=>{
-
-                video.play()
-                .catch(()=>{});
-
-            });
-
-    }
-);
-
-/* =====================================
-   DEFAULT SELECT
-===================================== */
-
-window.addEventListener(
-    "load",
-    ()=>{
-
-        const firstPreview =
-        document.querySelector(
-            ".preview"
-        );
-
-        if(firstPreview){
-
-            firstPreview.click();
-
+    await update(
+        ref(db,`rooms/${ROOM_ID}`),
+        {
+            currentTime:
+            player.currentTime
         }
+    );
 
-    }
-);
+};

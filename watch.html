@@ -1,59 +1,92 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>NOBAR LIVE</title>
+<title>Watch Room</title>
 
-<link rel="stylesheet" href="css/watch.css">
+<link rel="stylesheet" href="watch.css">
 
 </head>
 <body>
 
-<div class="player-wrapper">
+<div class="watch-app">
 
-    <video
-        id="player"
-        autoplay
-        playsinline
-        preload="auto">
-    </video>
+    <div class="topbar">
 
-    <div class="overlay-top">
-
-        <div class="brand">
-            🎬 NOBAR LIVE
+        <div class="logo">
+            KONDIAK<span>DOTCOM</span>
         </div>
 
-        <div class="live-badge">
-            ● LIVE
+        <div class="top-right">
+
+            <div class="live-badge">
+                🔴 LIVE
+            </div>
+
+            <div class="viewer-box">
+                👥
+                <span id="viewerCount">
+                    0
+                </span>
+            </div>
+
         </div>
 
     </div>
 
-    <div class="loading" id="loading">
+    <div class="video-container">
 
-        <div class="spinner"></div>
+        <video
+            id="watchPlayer"
+            autoplay
+            playsinline>
+        </video>
 
-        <p>
-            Menunggu Siaran...
-        </p>
+        <div class="overlay-info">
+
+            <div class="room-info">
+
+                Room
+                <span id="roomId">
+                    #2451
+                </span>
+
+            </div>
+
+        </div>
 
     </div>
 
-</div>
+    <div class="bottom-bar">
 
-<div class="status">
+        <div>
+            Host:
+            <span id="hostStatus" class="online">
+                Connected
+            </span>
+        </div>
 
-    <span id="statusText">
-        Menunggu Broadcast
-    </span>
+        <div>
+            Sync:
+            <span id="syncStatus" class="online">
+                Active
+            </span>
+        </div>
+
+        <button id="fullscreenBtn">
+            ⛶ Fullscreen
+        </button>
+
+    </div>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<script type="module" src="js/watch.js"></script>
+
+<script type="module" src="watch.js"></script>
 
 </body>
 </html>

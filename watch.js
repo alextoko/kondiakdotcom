@@ -2,132 +2,159 @@ import { db } from "./firebase.js";
 
 import {
     ref,
-    onValue
+    onValue,
+    set,
+    remove,
+    onDisconnect
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* =========================
-   ELEMENT
-========================= */
+const ROOM_ID = "2451";
 
 const player =
-document.getElementById("player");
+document.getElementById("watchPlayer");
 
-const statusText =
-document.getElementById("statusText");
+const viewerCount =
+document.getElementById("viewerCount");
 
-const loading =
-document.getElementById("loading");
+const roomId =
+document.getElementById("roomId");
 
-/* =========================
-   GLOBAL
-========================= */
+const fullscreenBtn =
+document.getElementById("fullscreenBtn");
 
-let currentVideo = "";
+roomId.textContent =
+"#" + ROOM_ID;
+
 let hls = null;
+let currentUrl = "";
 
-/* =========================
-   LOAD VIDEO
-========================= */
+/*
+|--------------------------------------------------------------------------
+| VIEWER ONLINE
+|--------------------------------------------------------------------------
+*/
 
-function loadVideo(url){
+const viewerId =
+"viewer_" +
+Date.now() +
+"_" +
+Math.floor(Math.random()*10000);
+
+const viewerRef =
+ref(
+    db,
+    `rooms/${ROOM_ID}/viewers/${viewerId}`
+);
+
+set(viewerRef,{
+    joinedAt:Date.now()
+});
+
+onDisconnect(viewerRef).remove();
+
+/*
+|--------------------------------------------------------------------------
+| COUNT VIEWERS
+|--------------------------------------------------------------------------
+*/
+
+onValue(
+    ref(db,`rooms/${ROOM_ID}/viewers`),
+    snapshot=>{
+
+        const data =
+        snapshot.val();
+
+        const count =
+        data
+        ? Object.keys(data).length
+        : 0;
+
+        viewerCount.textContent =
+        count;
+
+    }
+);
+
+/*
+|--------------------------------------------------------------------------
+| LOAD STREAM
+|--------------------------------------------------------------------------
+*/
+
+function loadStream(url){
+
+    if(!url) return;
+
+    if(url === currentUrl) return;
+
+    currentUrl = url;
 
     if(hls){
 
         hls.destroy();
+
         hls = null;
 
     }
 
-    if(url.endsWith(".m3u8")){
+    if(Hls.isSupported()){
 
-        if(window.Hls && Hls.isSupported()){
+        hls = new Hls();
 
-            hls = new Hls({
-                enableWorker:true,
-                lowLatencyMode:true
-            });
+        hls.loadSource(url);
 
-            hls.loadSource(url);
+        hls.attachMedia(player);
 
-            hls.attachMedia(player);
+        hls.on(
+            Hls.Events.MANIFEST_PARSED,
+            ()=>{
 
-        }else{
+                player.play()
+                .catch(()=>{});
 
-            player.src = url;
-
-        }
+            }
+        );
 
     }else{
 
         player.src = url;
 
+        player.play()
+        .catch(()=>{});
+
     }
+
 }
 
-/* =========================
-   FIREBASE LISTENER
-========================= */
+/*
+|--------------------------------------------------------------------------
+| WATCH ROOM
+|--------------------------------------------------------------------------
+*/
 
 onValue(
-    ref(db,"broadcast"),
-    async(snapshot)=>{
+    ref(db,`rooms/${ROOM_ID}`),
+    snapshot=>{
 
-        const data =
+        const room =
         snapshot.val();
 
-        if(!data) return;
+        if(!room) return;
 
-        statusText.textContent =
-        "ON AIR";
+        if(room.activeVideo){
 
-        loading.style.display =
-        "none";
-
-        /* VIDEO BERUBAH */
-
-        if(
-            data.activeVideo &&
-            data.activeVideo !== currentVideo
-        ){
-
-            currentVideo =
-            data.activeVideo;
-
-            loadVideo(
-                data.activeVideo
+            loadStream(
+                room.activeVideo
             );
 
-            try{
-
-                await player.play();
-
-            }catch(err){
-
-                console.log(err);
-
-            }
-
-            return;
         }
 
-        /* PLAY / PAUSE */
+        if(room.playing){
 
-        if(data.playing){
-
-            if(player.paused){
-
-                try{
-
-                    await player.play();
-
-                }catch(err){
-
-                    console.log(err);
-
-                }
-
-            }
+            player.play()
+            .catch(()=>{});
 
         }else{
 
@@ -135,96 +162,54 @@ onValue(
 
         }
 
-        /* SYNC TIME */
-
-        const diff =
-        Math.abs(
-            player.currentTime -
-            (data.currentTime || 0)
-        );
-
-        if(diff > 5){
+        if(
+            room.currentTime &&
+            Math.abs(
+                player.currentTime -
+                room.currentTime
+            ) > 3
+        ){
 
             player.currentTime =
-            data.currentTime || 0;
+            room.currentTime;
 
         }
 
     }
 );
 
-/* =========================
-   BLOK CONTROL USER
-========================= */
+/*
+|--------------------------------------------------------------------------
+| FULLSCREEN
+|--------------------------------------------------------------------------
+*/
 
-player.controls = false;
-
-player.disablePictureInPicture = true;
-
-player.controlsList =
-"nodownload noplaybackrate nofullscreen";
-
-/* klik kanan */
-
-player.addEventListener(
-    "contextmenu",
-    e=>e.preventDefault()
-);
-
-/* drag */
-
-document.addEventListener(
-    "dragstart",
-    e=>e.preventDefault()
-);
-
-/* keyboard */
-
-document.addEventListener(
-    "keydown",
-    e=>{
-
-        e.preventDefault();
-
-    }
-);
-
-/* double click */
-
-player.addEventListener(
-    "dblclick",
-    e=>e.preventDefault()
-);
-
-/* blok seek */
-
-player.addEventListener(
-    "seeking",
+fullscreenBtn.addEventListener(
+    "click",
     ()=>{
 
-        if(player.readyState > 0){
+        if(!document.fullscreenElement){
 
-            player.currentTime =
-            player.currentTime;
+            player.requestFullscreen();
+
+        }else{
+
+            document.exitFullscreen();
 
         }
 
     }
 );
 
-/* =========================
-   CLEANUP
-========================= */
-
-window.addEventListener(
-    "beforeunload",
+player.addEventListener(
+    "pause",
     ()=>{
 
-        if(hls){
-
-            hls.destroy();
-
-        }
+        player.play();
 
     }
+);
+
+console.log(
+    "WATCH READY"
 );
