@@ -14,19 +14,3 @@ document
 
 });
 
-document
-.getElementById("fullscreenBtn")
-.addEventListener("click",()=>{
-
-    if(!document.fullscreenElement){
-
-        document.documentElement
-        .requestFullscreen();
-
-    }else{
-
-        document.exitFullscreen();
-
-    }
-
-});

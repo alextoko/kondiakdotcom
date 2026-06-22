@@ -3,10 +3,25 @@ import { db } from "./firebase.js";
 import {
     ref,
     set,
-    update
+    update,
+    onDisconnect
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const ROOM_ID = "2451";
+
+const hostRef =
+ref(
+    db,
+    `rooms/${ROOM_ID}/host`
+);
+
+set(hostRef,{
+    online:true
+});
+
+onDisconnect(hostRef).set({
+    online:false
+});
 
 const player = document.getElementById("programPlayer");
 const previewPlayer =
@@ -17,17 +32,13 @@ document.getElementById("takeBtn");
 
 let previewInput = 0;
 let liveInput = 0;
-
+let isOnAir = false;
 let previewHls = null;
-let programHls = null;
 
 const inputUrl = document.getElementById("inputUrl");
 
 
 const onAirBtn = document.getElementById("onAirBtn");
-const playBtn = document.getElementById("playBtn");
-const pauseBtn = document.getElementById("pauseBtn");
-const stopBtn = document.getElementById("stopBtn");
 const fullscreenBtn = document.getElementById("fullscreenBtn");
 
 const currentInputText =
@@ -37,8 +48,6 @@ const broadcastStatus =
 document.getElementById("broadcastStatus");
 
 let hls = null;
-
-let activeInput = 0;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,10 +90,7 @@ function loadStream(url){
 
     if(Hls.isSupported()){
 
-        hls = new Hls({
-            enableWorker:true,
-            lowLatencyMode:true
-        });
+        hls = new Hls();
 
         hls.loadSource(url);
 
@@ -211,6 +217,7 @@ document
 
 takeBtn.addEventListener(
     "click",
+    
     async()=>{
 
         liveInput =
@@ -235,6 +242,12 @@ takeBtn.addEventListener(
 
                 activeVideo:
                 inputs[liveInput],
+
+                playing:
+                !player.paused,
+
+                currentTime:
+                player.currentTime,
 
                 updatedAt:
                 Date.now()
@@ -261,79 +274,9 @@ inputUrl.addEventListener(
 
         if(!url) return;
 
-        loadStream(url);
+        inputs[previewInput] = url;
 
-    }
-);
-
-/*
-|--------------------------------------------------------------------------
-| PLAY
-|--------------------------------------------------------------------------
-*/
-
-playBtn?.addEventListener(
-    "click",
-    async()=>{
-
-        await player.play();
-
-        await update(
-            ref(db,`rooms/${ROOM_ID}`),
-            {
-                playing:true,
-                updatedAt:Date.now()
-            }
-        );
-
-    }
-);
-
-/*
-|--------------------------------------------------------------------------
-| PAUSE
-|--------------------------------------------------------------------------
-*/
-
-pauseBtn?.addEventListener(
-    "click",
-    async()=>{
-
-        player.pause();
-
-        await update(
-            ref(db,`rooms/${ROOM_ID}`),
-            {
-                playing:false,
-                updatedAt:Date.now()
-            }
-        );
-
-    }
-);
-
-/*
-|--------------------------------------------------------------------------
-| STOP
-|--------------------------------------------------------------------------
-*/
-
-stopBtn?.addEventListener(
-    "click",
-    async()=>{
-
-        player.pause();
-
-        player.currentTime = 0;
-
-        await update(
-            ref(db,`rooms/${ROOM_ID}`),
-            {
-                playing:false,
-                currentTime:0,
-                updatedAt:Date.now()
-            }
-        );
+        loadPreview(url);
 
     }
 );
@@ -343,19 +286,31 @@ stopBtn?.addEventListener(
 | FULLSCREEN
 |--------------------------------------------------------------------------
 */
+fullscreenBtn.onclick = ()=>{
 
-fullscreenBtn?.addEventListener(
-    "click",
+    if(!document.fullscreenElement){
+
+        player.requestFullscreen();
+
+    }else{
+
+        document.exitFullscreen();
+
+    }
+
+};
+
+document.addEventListener(
+    "fullscreenchange",
     ()=>{
 
-        if(!document.fullscreenElement){
+        if(
+            document.fullscreenElement &&
+            player.paused
+        ){
 
-            document.documentElement
-            .requestFullscreen();
-
-        }else{
-
-            document.exitFullscreen();
+            player.play()
+            .catch(()=>{});
 
         }
 
@@ -368,74 +323,91 @@ fullscreenBtn?.addEventListener(
 |--------------------------------------------------------------------------
 */
 
-onAirBtn?.addEventListener(
-    "click",
-    async()=>{
+onAirBtn.onclick = async()=>{
 
-        const payload = {
+    isOnAir = !isOnAir;
 
-            roomId:ROOM_ID,
+    if(isOnAir){
 
-            activeInput,
-
-            activeVideo:
-            inputs[activeInput],
-
-            playing:
-            !player.paused,
-
-            currentTime:
-            player.currentTime,
-
-            status:"ON_AIR",
-
-            updatedAt:
-            Date.now()
-
-        };
-
-        await set(
+        await update(
             ref(db,`rooms/${ROOM_ID}`),
-            payload
+            {
+                status:"ON_AIR",
+                activeInput:liveInput,
+                activeVideo:inputs[liveInput],
+                playing:!player.paused,
+                currentTime:player.currentTime,
+                updatedAt:Date.now()
+            }
         );
+
+        onAirBtn.innerHTML =
+        "🔴 ON AIR";
 
         broadcastStatus.textContent =
         "ON AIR";
 
-        broadcastStatus.classList
-        .remove("red");
+        broadcastStatus.classList.remove("red");
+        broadcastStatus.classList.add("green");
 
-        broadcastStatus.classList
-        .add("green");
+    }else{
 
-        console.log(
-            "Broadcast ON AIR",
-            payload
+        await update(
+            ref(db,`rooms/${ROOM_ID}`),
+            {
+                status:"OFF_AIR",
+                playing:false,
+                updatedAt:Date.now()
+            }
         );
 
+        onAirBtn.innerHTML =
+        "⚫ OFF AIR";
+
+        broadcastStatus.textContent =
+        "OFF AIR";
+
+        broadcastStatus.classList.remove("green");
+        broadcastStatus.classList.add("red");
+
     }
-);
+
+};
 
 /*
 |--------------------------------------------------------------------------
 | SYNC POSITION
 |--------------------------------------------------------------------------
 */
-
 setInterval(async()=>{
 
     if(player.paused) return;
 
+    if(!isOnAir) return;
+
     try{
 
         await update(
-            ref(db,`rooms/${ROOM_ID}`),
+            ref(
+                db,
+                `rooms/${ROOM_ID}`
+            ),
             {
+
+                activeInput:
+                liveInput,
+
+                activeVideo:
+                inputs[liveInput],
+
+                playing:
+                !player.paused,
 
                 currentTime:
                 player.currentTime,
 
-                playing:true,
+                status:
+                isOnAir ? "ON_AIR" : "OFF_AIR",
 
                 updatedAt:
                 Date.now()
@@ -459,7 +431,8 @@ setInterval(async()=>{
 
 setPreviewInput(0);
 
-loadStream(inputs[0]);
+player.removeAttribute("src");
+player.load();
 
 console.log(
     "HOST READY"
@@ -478,7 +451,8 @@ previewPlayer.pause();
 document
 .getElementById("previewBack")
 .onclick = () =>
-previewPlayer.currentTime -= 10;
+previewPlayer.currentTime =
+Math.max(0, previewPlayer.currentTime - 10);
 
 document
 .getElementById("previewForward")
@@ -490,6 +464,8 @@ document
 .onclick = async()=>{
 
     player.play();
+
+    if(!isOnAir) return;
 
     await update(
         ref(db,`rooms/${ROOM_ID}`),
@@ -508,6 +484,8 @@ document
 
     player.pause();
 
+    if(!isOnAir) return;
+
     await update(
         ref(db,`rooms/${ROOM_ID}`),
         {
@@ -523,7 +501,10 @@ document
 .getElementById("liveBack")
 .onclick = async()=>{
 
-    player.currentTime -= 10;
+    player.currentTime =
+    Math.max(0, player.currentTime - 10);
+
+    if(!isOnAir) return;
 
     await update(
         ref(db,`rooms/${ROOM_ID}`),
@@ -541,11 +522,43 @@ document
 
     player.currentTime += 10;
 
+    if(!isOnAir) return;
+
     await update(
         ref(db,`rooms/${ROOM_ID}`),
         {
             currentTime:
             player.currentTime
+        }
+    );
+
+};
+
+document
+.getElementById("previewStop")
+.onclick = ()=>{
+
+    previewPlayer.pause();
+
+    previewPlayer.currentTime = 0;
+
+};
+
+document
+.getElementById("liveStop")
+.onclick = async()=>{
+
+    player.pause();
+
+    player.currentTime = 0;
+
+    if(!isOnAir) return;
+
+    await update(
+        ref(db,`rooms/${ROOM_ID}`),
+        {
+            playing:false,
+            currentTime:0
         }
     );
 

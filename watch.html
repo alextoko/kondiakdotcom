@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>Watch Room</title>
+<title>KONDIAKDOTCOM LIVE</title>
 
 <link rel="stylesheet" href="watch.css">
 
@@ -14,30 +14,21 @@
 
 <div class="watch-app">
 
-    <div class="topbar">
-
-        <div class="logo">
-            KONDIAK<span>DOTCOM</span>
-        </div>
-
-        <div class="top-right">
-
-            <div class="live-badge">
-                🔴 LIVE
-            </div>
-
-            <div class="viewer-box">
-                👥
-                <span id="viewerCount">
-                    0
-                </span>
-            </div>
-
-        </div>
-
-    </div>
-
     <div class="video-container">
+
+        <div id="offlineScreen" class="offline-screen">
+
+            <div class="offline-card">
+
+                <h1>🔴 BROADCAST OFFLINE</h1>
+
+                <p>
+                    Host belum memulai siaran
+                </p>
+
+            </div>
+
+        </div>
 
         <video
             id="watchPlayer"
@@ -45,47 +36,87 @@
             playsinline>
         </video>
 
-        <div class="overlay-info">
+        <!-- TOP LEFT -->
+        <div class="overlay top-left">
 
-            <div class="room-info">
+            <div class="brand">
+                KONDIAK<span>DOTCOM</span>
+            </div>
 
-                Room
-                <span id="roomId">
-                    #2451
+            <div class="live-pill">
+                🔴 LIVE
+            </div>
+
+            <div class="room-box">
+                ROOM <span id="roomId">#2451</span>
+            </div>
+
+        </div>
+
+        <!-- TOP RIGHT -->
+        <div class="overlay top-right">
+
+            <div class="viewer-box">
+                👥
+                <span id="viewerCount">0</span>
+                Watching
+            </div>
+
+        </div>
+
+        <!-- BOTTOM LEFT -->
+        <div class="overlay bottom-left">
+
+            <div class="status-row">
+
+                <span class="status-label">
+                    HOST
+                </span>
+
+                <span
+                    id="hostStatus"
+                    class="online">
+
+                    Connected
+
+                </span>
+
+            </div>
+
+            <div class="status-row">
+
+                <span class="status-label">
+                    SYNC
+                </span>
+
+                <span
+                    id="syncStatus"
+                    class="online">
+
+                    Active
+
                 </span>
 
             </div>
 
         </div>
 
-    </div>
+        <!-- BOTTOM RIGHT -->
+        <div class="overlay bottom-right">
 
-    <div class="bottom-bar">
+            <button id="fullscreenBtn">
 
-        <div>
-            Host:
-            <span id="hostStatus" class="online">
-                Connected
-            </span>
+                ⛶ Fullscreen
+
+            </button>
+
         </div>
-
-        <div>
-            Sync:
-            <span id="syncStatus" class="online">
-                Active
-            </span>
-        </div>
-
-        <button id="fullscreenBtn">
-            ⛶ Fullscreen
-        </button>
 
     </div>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
 <script type="module" src="watch.js"></script>
 
 </body>

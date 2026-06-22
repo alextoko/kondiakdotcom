@@ -2,6 +2,7 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
+    font-family:'Inter',sans-serif;
 }
 
 html,
@@ -9,138 +10,284 @@ body{
     width:100%;
     height:100%;
     overflow:hidden;
-
     background:#000;
-    color:white;
-
-    font-family:Inter,sans-serif;
 }
 
 .watch-app{
     width:100vw;
     height:100vh;
-
-    display:grid;
-
-    grid-template-rows:
-        70px
-        1fr
-        50px;
 }
 
-.topbar{
+/* =========================
+   VIDEO
+========================= */
+
+.video-container{
+    position:relative;
+    width:100%;
+    height:100%;
+    background:#000;
+}
+
+#watchPlayer{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    background:#000;
+    pointer-events:none;
+}
+
+/* =========================
+   OFFLINE SCREEN
+========================= */
+
+.offline-screen{
+    position:absolute;
+    inset:0;
+
     display:flex;
-    justify-content:space-between;
+    justify-content:center;
     align-items:center;
 
-    padding:0 20px;
+    background:#000;
 
-    background:#0f0f0f;
-
-    border-bottom:1px solid #222;
+    z-index:999;
 }
 
-.logo{
-    font-size:30px;
-    font-weight:800;
+.offline-screen.hidden{
+    display:none;
 }
 
-.logo span{
-    color:#e50914;
+.offline-card{
+    text-align:center;
+
+    background:rgba(255,255,255,.05);
+
+    border:1px solid rgba(255,255,255,.1);
+
+    backdrop-filter:blur(12px);
+
+    padding:40px;
+
+    border-radius:20px;
+
+    color:#fff;
+}
+
+.offline-card h1{
+    margin-bottom:10px;
+    font-size:32px;
+}
+
+.offline-card p{
+    color:#bbb;
+}
+
+/* =========================
+   OVERLAY
+========================= */
+
+.overlay{
+    position:absolute;
+    z-index:20;
+}
+
+.top-left{
+    top:20px;
+    left:20px;
+
+    display:flex;
+    flex-direction:column;
+    gap:10px;
 }
 
 .top-right{
-    display:flex;
-    gap:15px;
-    align-items:center;
+    top:20px;
+    right:20px;
 }
 
-.live-badge{
-    background:#e50914;
+.bottom-left{
+    bottom:20px;
+    left:20px;
 
-    padding:8px 15px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
 
-    border-radius:8px;
+.bottom-right{
+    bottom:20px;
+    right:20px;
+}
+
+/* =========================
+   BRAND
+========================= */
+
+.brand{
+    font-size:34px;
+    font-weight:900;
+    color:white;
+
+    text-shadow:
+    0 0 20px rgba(0,0,0,.8);
+}
+
+.brand span{
+    color:#e50914;
+}
+
+/* =========================
+   GLASS STYLE
+========================= */
+
+.live-pill,
+.room-box,
+.viewer-box,
+.status-row{
+
+    background:
+    rgba(0,0,0,.55);
+
+    backdrop-filter:
+    blur(12px);
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+    color:#fff;
+
+    border-radius:12px;
+}
+
+.live-pill{
+    display:inline-flex;
+    align-items:center;
+
+    width:max-content;
+
+    padding:10px 18px;
 
     font-weight:700;
 }
 
+.room-box{
+    width:max-content;
+
+    padding:10px 18px;
+
+    font-weight:600;
+
+    color:#00d9ff;
+}
+
 .viewer-box{
-    background:#181818;
+    padding:12px 18px;
 
-    padding:8px 15px;
+    color:white;
 
-    border-radius:8px;
+    font-weight:700;
 }
 
-.video-container{
-    position:relative;
-
-    width:100%;
-    height:100%;
-}
-
-#watchPlayer{
-    width:100%;
-    height:100%;
-
-    object-fit:contain;
-
-    background:#000;
-}
-
-.overlay-info{
-    position:absolute;
-
-    top:15px;
-    left:15px;
-
-    background:rgba(0,0,0,.5);
-
-    padding:10px 15px;
-
-    border-radius:10px;
-}
-
-.bottom-bar{
+.status-row{
     display:flex;
-    justify-content:space-between;
     align-items:center;
+    gap:12px;
 
-    padding:0 20px;
+    padding:10px 16px;
+}
 
-    background:#111;
-
-    border-top:1px solid #222;
+.status-label{
+    color:#aaa;
+    font-size:13px;
 }
 
 .online{
     color:#00ff88;
+    font-weight:700;
 }
 
 .offline{
     color:#ff3040;
+    font-weight:700;
 }
 
+/* =========================
+   FULLSCREEN
+========================= */
+
 #fullscreenBtn{
+
     border:none;
 
-    background:#222;
+    background:
+    linear-gradient(
+        135deg,
+        #e50914,
+        #b00610
+    );
 
     color:white;
 
-    padding:8px 15px;
+    font-size:16px;
+    font-weight:700;
 
-    border-radius:8px;
+    padding:14px 24px;
+
+    border-radius:12px;
 
     cursor:pointer;
+
+    transition:.3s;
 }
 
-#watchPlayer{
-    width:100%;
-    height:100%;
-    object-fit:contain;
-    background:#000;
+#fullscreenBtn:hover{
 
-    pointer-events:none;
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 0 25px rgba(229,9,20,.6);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:768px){
+
+    .brand{
+        font-size:22px;
+    }
+
+    .viewer-box,
+    .room-box,
+    .status-row{
+        font-size:13px;
+    }
+
+    #fullscreenBtn{
+        padding:10px 16px;
+        font-size:14px;
+    }
+
+    .top-left{
+        top:12px;
+        left:12px;
+    }
+
+    .top-right{
+        top:12px;
+        right:12px;
+    }
+
+    .bottom-left{
+        left:12px;
+        bottom:12px;
+    }
+
+    .bottom-right{
+        right:12px;
+        bottom:12px;
+    }
+
 }
