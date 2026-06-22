@@ -1,122 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>KONDIAKDOTCOM LIVE</title>
+<title>VIEWER</title>
 
 <link rel="stylesheet" href="watch.css">
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 
-<div class="watch-app">
+<div class="app">
 
-    <div class="video-container">
+    <header class="topbar">
 
-        <div id="offlineScreen" class="offline-screen">
+        <div class="brand">
+            KONDIAK<span>DOTCOM</span>
+        </div>
 
-            <div class="offline-card">
+        <div class="top-right">
 
-                <h1>🔴 BROADCAST OFFLINE</h1>
+            <div class="live-badge">
+                <span class="dot"></span>
+                LIVE
+            </div>
 
-                <p>
-                    Host belum memulai siaran
-                </p>
+            <div class="info-box">
+                ROOM
+                <strong id="roomId">#2451</strong>
+            </div>
 
+            <div class="info-box">
+                VIEWERS
+                <strong id="viewerCount">0</strong>
             </div>
 
         </div>
 
+    </header>
+
+    <main class="player-area">
+
+    <div class="video-frame">
         <video
             id="watchPlayer"
             autoplay
-            playsinline>
+            playsinline
+            controlslist="nodownload nofullscreen noremoteplayback"
+            disablepictureinpicture>
         </video>
-
-        <!-- TOP LEFT -->
-        <div class="overlay top-left">
-
-            <div class="brand">
-                KONDIAK<span>DOTCOM</span>
-            </div>
-
-            <div class="live-pill">
-                🔴 LIVE
-            </div>
-
-            <div class="room-box">
-                ROOM <span id="roomId">#2451</span>
-            </div>
-
-        </div>
-
-        <!-- TOP RIGHT -->
-        <div class="overlay top-right">
-
-            <div class="viewer-box">
-                👥
-                <span id="viewerCount">0</span>
-                Watching
-            </div>
-
-        </div>
-
-        <!-- BOTTOM LEFT -->
-        <div class="overlay bottom-left">
-
-            <div class="status-row">
-
-                <span class="status-label">
-                    HOST
-                </span>
-
-                <span
-                    id="hostStatus"
-                    class="online">
-
-                    Connected
-
-                </span>
-
-            </div>
-
-            <div class="status-row">
-
-                <span class="status-label">
-                    SYNC
-                </span>
-
-                <span
-                    id="syncStatus"
-                    class="online">
-
-                    Active
-
-                </span>
-
-            </div>
-
-        </div>
-
-        <!-- BOTTOM RIGHT -->
-        <div class="overlay bottom-right">
-
-            <button id="fullscreenBtn">
-
-                ⛶ Fullscreen
-
-            </button>
-
-        </div>
-
     </div>
+
+        <div class="video-overlay">
+
+            <div class="overlay-left">
+
+                <div class="live-pill">
+                    🔴 LIVE NOW
+                </div>
+
+            </div>
+
+            <div class="overlay-right">
+
+                <button
+                    id="fullscreenBtn"
+                    class="fullscreen-btn">
+
+                    ⛶ FULLSCREEN
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <div
+        id="offlineScreen"
+        class="offline-screen hidden">
+
+            <div class="offline-card">
+
+                <h2>
+                    📺 OFF AIR
+                </h2>
+
+                <p>
+                    Host belum menayangkan siaran.
+                </p>
+
+                <span>
+                    Menunggu broadcast dimulai...
+                </span>
+
+            </div>
+
+        </div>
+
+    </main>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script type="module" src="watch.js"></script>
 
 </body>

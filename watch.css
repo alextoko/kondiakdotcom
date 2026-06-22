@@ -10,40 +10,160 @@ body{
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#000;
+    background:#050505;
+    color:#fff;
 }
 
-.watch-app{
-    width:100vw;
+/* =========================
+   APP
+========================= */
+
+.app{
+    width:100%;
     height:100vh;
+
+    display:grid;
+    grid-template-rows:80px 1fr;
+
+    background:
+    radial-gradient(
+        circle at center,
+        #141414,
+        #050505
+    );
 }
 
 /* =========================
-   VIDEO
+   HEADER
 ========================= */
 
-.video-container{
+.topbar{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:0 24px;
+
+    background:#080808;
+
+    border-bottom:
+    1px solid #1a1a1a;
+
+    box-shadow:
+    0 5px 25px rgba(0,0,0,.4);
+
+    z-index:100;
+}
+
+.brand{
+
+    font-size:42px;
+    font-weight:900;
+
+    letter-spacing:-2px;
+}
+
+.brand span{
+    color:#e50914;
+}
+
+.top-right{
+
+    display:flex;
+    gap:12px;
+    align-items:center;
+}
+
+.live-badge{
+
+    height:58px;
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    padding:0 24px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #8a0000,
+        #e50914
+    );
+
+    border-radius:16px;
+
+    font-size:20px;
+    font-weight:800;
+
+    box-shadow:
+    0 0 25px rgba(229,9,20,.35);
+}
+
+.dot{
+
+    width:10px;
+    height:10px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    animation:blink 1s infinite;
+}
+
+.info-box{
+
+    min-width:110px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+
+    padding:10px 16px;
+
+    background:#111;
+
+    border:1px solid #222;
+
+    border-radius:16px;
+
+    color:#999;
+
+    font-size:12px;
+}
+
+.info-box strong{
+
+    margin-top:4px;
+
+    color:#fff;
+
+    font-size:18px;
+}
+
+/* =========================
+   PLAYER AREA
+========================= */
+
+.player-area{
+
     position:relative;
-    width:100%;
-    height:100%;
-    background:#000;
+
+    padding:24px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
 }
 
-#watchPlayer{
+.video-frame{
+
     width:100%;
     height:100%;
-    object-fit:cover;
-    background:#000;
-    pointer-events:none;
-}
-
-/* =========================
-   OFFLINE SCREEN
-========================= */
-
-.offline-screen{
-    position:absolute;
-    inset:0;
 
     display:flex;
     justify-content:center;
@@ -51,243 +171,270 @@ body{
 
     background:#000;
 
-    z-index:999;
+    border-radius:22px;
+
+    overflow:hidden;
+
+    border:1px solid #202020;
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,.6);
 }
 
-.offline-screen.hidden{
-    display:none;
+.video-frame:fullscreen{
+
+    width:100vw;
+    height:100vh;
+
+    background:#000;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
-.offline-card{
-    text-align:center;
+.video-frame:fullscreen #watchPlayer{
 
-    background:rgba(255,255,255,.05);
+    width:100%;
+    height:100%;
 
-    border:1px solid rgba(255,255,255,.1);
-
-    backdrop-filter:blur(12px);
-
-    padding:40px;
-
-    border-radius:20px;
-
-    color:#fff;
+    object-fit:contain;
 }
 
-.offline-card h1{
-    margin-bottom:10px;
-    font-size:32px;
+#watchPlayer{
+
+    width:100%;
+    height:100%;
+
+    object-fit:contain;
+
+    background:#000;
+
+    pointer-events:none;
+
+    user-select:none;
+    -webkit-user-select:none;
 }
 
-.offline-card p{
-    color:#bbb;
+#watchPlayer::-webkit-media-controls{
+    display:none !important;
+}
+
+#watchPlayer::-webkit-media-controls-panel{
+    display:none !important;
+}
+
+#watchPlayer::-webkit-media-controls-play-button{
+    display:none !important;
+}
+
+#watchPlayer::-webkit-media-controls-start-playback-button{
+    display:none !important;
 }
 
 /* =========================
    OVERLAY
 ========================= */
 
-.overlay{
+.video-overlay{
+
     position:absolute;
+
+    top:40px;
+    left:40px;
+    right:40px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+
     z-index:20;
 }
 
-.top-left{
-    top:20px;
-    left:20px;
-
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-
-.top-right{
-    top:20px;
-    right:20px;
-}
-
-.bottom-left{
-    bottom:20px;
-    left:20px;
-
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
-.bottom-right{
-    bottom:20px;
-    right:20px;
-}
-
-/* =========================
-   BRAND
-========================= */
-
-.brand{
-    font-size:34px;
-    font-weight:900;
-    color:white;
-
-    text-shadow:
-    0 0 20px rgba(0,0,0,.8);
-}
-
-.brand span{
-    color:#e50914;
-}
-
-/* =========================
-   GLASS STYLE
-========================= */
-
-.live-pill,
-.room-box,
-.viewer-box,
-.status-row{
-
-    background:
-    rgba(0,0,0,.55);
-
-    backdrop-filter:
-    blur(12px);
-
-    border:
-    1px solid rgba(255,255,255,.08);
-
-    color:#fff;
-
-    border-radius:12px;
-}
-
 .live-pill{
-    display:inline-flex;
-    align-items:center;
 
-    width:max-content;
-
-    padding:10px 18px;
-
-    font-weight:700;
-}
-
-.room-box{
-    width:max-content;
-
-    padding:10px 18px;
-
-    font-weight:600;
-
-    color:#00d9ff;
-}
-
-.viewer-box{
     padding:12px 18px;
 
-    color:white;
+    background:
+    rgba(0,0,0,.75);
 
+    backdrop-filter:blur(10px);
+
+    border:1px solid #222;
+
+    border-radius:14px;
+
+    font-size:14px;
     font-weight:700;
 }
 
-.status-row{
-    display:flex;
-    align-items:center;
-    gap:12px;
+.fullscreen-btn{
 
-    padding:10px 16px;
-}
+    height:52px;
 
-.status-label{
-    color:#aaa;
-    font-size:13px;
-}
-
-.online{
-    color:#00ff88;
-    font-weight:700;
-}
-
-.offline{
-    color:#ff3040;
-    font-weight:700;
-}
-
-/* =========================
-   FULLSCREEN
-========================= */
-
-#fullscreenBtn{
+    padding:0 22px;
 
     border:none;
 
+    border-radius:14px;
+
     background:
-    linear-gradient(
-        135deg,
-        #e50914,
-        #b00610
-    );
+    rgba(0,0,0,.75);
 
-    color:white;
+    backdrop-filter:blur(10px);
 
-    font-size:16px;
+    border:1px solid #222;
+
+    color:#fff;
+
     font-weight:700;
-
-    padding:14px 24px;
-
-    border-radius:12px;
 
     cursor:pointer;
 
-    transition:.3s;
+    transition:.25s;
 }
 
-#fullscreenBtn:hover{
+.fullscreen-btn:hover{
+
+    background:#e50914;
 
     transform:translateY(-2px);
+}
 
-    box-shadow:
-    0 0 25px rgba(229,9,20,.6);
+/* =========================
+   OFF AIR
+========================= */
+
+.offline-screen{
+
+    position:absolute;
+    inset:0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:
+    rgba(0,0,0,.92);
+
+    backdrop-filter:blur(8px);
+
+    z-index:50;
+}
+
+.hidden{
+    display:none;
+}
+
+.offline-card{
+
+    min-width:350px;
+
+    text-align:center;
+
+    padding:40px;
+
+    background:#111;
+
+    border:1px solid #222;
+
+    border-radius:24px;
+}
+
+.offline-card h2{
+
+    color:#e50914;
+
+    margin-bottom:16px;
+}
+
+.offline-card p{
+
+    color:#ddd;
+
+    margin-bottom:10px;
+}
+
+.offline-card span{
+
+    color:#888;
+}
+
+/* =========================
+   ANIMATION
+========================= */
+
+@keyframes blink{
+
+    50%{
+        opacity:.3;
+    }
 }
 
 /* =========================
    MOBILE
 ========================= */
 
-@media(max-width:768px){
+@media(max-width:900px){
+
+    .app{
+        grid-template-rows:auto 1fr;
+    }
+
+    .topbar{
+
+        flex-direction:column;
+
+        gap:10px;
+
+        padding:12px;
+    }
 
     .brand{
-        font-size:22px;
-    }
-
-    .viewer-box,
-    .room-box,
-    .status-row{
-        font-size:13px;
-    }
-
-    #fullscreenBtn{
-        padding:10px 16px;
-        font-size:14px;
-    }
-
-    .top-left{
-        top:12px;
-        left:12px;
+        font-size:28px;
     }
 
     .top-right{
-        top:12px;
-        right:12px;
+
+        width:100%;
+
+        justify-content:center;
+
+        flex-wrap:wrap;
     }
 
-    .bottom-left{
-        left:12px;
-        bottom:12px;
+    .live-badge{
+
+        height:48px;
+
+        font-size:16px;
     }
 
-    .bottom-right{
-        right:12px;
-        bottom:12px;
+    .player-area{
+        padding:12px;
     }
 
+    .video-overlay{
+
+        top:20px;
+        left:20px;
+        right:20px;
+    }
+
+    .fullscreen-btn{
+
+        height:44px;
+
+        font-size:12px;
+    }
+
+    .live-pill{
+
+        font-size:12px;
+    }
+
+    .info-box{
+
+        min-width:90px;
+    }
 }

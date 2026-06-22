@@ -28,7 +28,7 @@ body{
     display:grid;
 
     grid-template-rows:
-        70px
+        50px
         50vh
         minmax(180px,1fr)
         60px;
@@ -102,8 +102,8 @@ body{
 
 .take-btn{
 
-    width:90px;
-    height:90px;
+    width:80px;
+    height:80px;
 
     border:none;
     border-radius:16px;
@@ -120,6 +120,18 @@ body{
         0 0 25px rgba(229,9,20,.6);
 
     transition:.3s;
+}
+
+.input-card{
+    pointer-events:none;
+}
+
+.input-card .thumb{
+    pointer-events:auto;
+}
+
+.take-btn:active{
+    transform:scale(.95);
 }
 
 .take-btn:hover{
@@ -170,7 +182,7 @@ body{
 ========================= */
 
 .header{
-    height:70px;
+    height:50px;
 
     display:flex;
     justify-content:space-between;
@@ -216,14 +228,14 @@ body{
 }
 
 .info-box{
-    min-width:120px;
+    min-width:90px;
+    padding:6px 12px;
 
     background:#121212;
     border:1px solid #222;
 
     border-radius:12px;
 
-    padding:10px 15px;
 }
 
 .info-title{
@@ -248,7 +260,7 @@ body{
     gap:10px;
 
     font-weight:700;
-    font-size:20px;
+    font-size:16px;
 }
 
 .live-dot{
@@ -371,36 +383,6 @@ body{
     box-shadow:0 0 20px rgba(0,0,0,.5);
 }
 
-/* =========================
-   URL INPUT
-========================= */
-
-.url-box{
-    display:flex;
-    margin-bottom:15px;
-}
-
-#inputUrl{
-    width:100%;
-
-    background:#1a1a1a;
-    color:#fff;
-
-    border:1px solid #333;
-    border-radius:10px;
-
-    padding:14px 16px;
-
-    font-size:16px;
-
-    outline:none;
-}
-
-#inputUrl:focus{
-    border-color:#e50914;
-    box-shadow:
-        0 0 10px rgba(229,9,20,.4);
-}
 
 /* =========================
    INPUT SOURCES
@@ -491,6 +473,26 @@ body{
 
 .active .status{
     color:#ff3040;
+}
+
+.input-card{
+    transition:.3s;
+}
+
+.input-card .thumb{
+    border:2px solid #333;
+}
+
+/* STANDBY / PREVIEW */
+.input-card.active .thumb{
+    border-color:#00ff88;
+    box-shadow:0 0 20px rgba(0,255,136,.5);
+}
+
+/* ON AIR */
+.input-card.on-air .thumb{
+    border-color:#ff3040;
+    box-shadow:0 0 25px rgba(255,48,64,.7);
 }
 
 /* =========================

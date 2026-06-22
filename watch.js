@@ -19,6 +19,50 @@ const ROOM_ID = "2451";
 const player =
 document.getElementById("watchPlayer");
 
+player.addEventListener(
+    "waiting",
+    ()=>{
+
+        console.log("BUFFERING");
+
+    }
+);
+
+player.addEventListener(
+    "playing",
+    ()=>{
+
+        console.log("PLAYING");
+
+    }
+);
+
+player.addEventListener(
+    "stalled",
+    ()=>{
+
+        console.log("STALLED");
+
+    }
+);
+
+player.addEventListener(
+    "canplay",
+    ()=>{
+
+        console.log("CAN PLAY");
+
+    }
+);
+
+player.controls = false;
+player.removeAttribute("controls");
+player.disablePictureInPicture = true;
+
+player.autoplay = true;
+player.playsInline = true;
+player.preload = "auto";
+
 const viewerCount =
 document.getElementById("viewerCount");
 
@@ -39,7 +83,7 @@ roomId.textContent =
 | VARIABLES
 |--------------------------------------------------------------------------
 */
-
+let lastHostTime = 0;
 let hls = null;
 let currentUrl = "";
 let isOffAir = false;
@@ -117,33 +161,33 @@ function loadStream(url){
 
         hls = new Hls({
             enableWorker:true,
-            lowLatencyMode:true
+            maxBufferLength:30,
+            maxMaxBufferLength:60
         });
+
+        hls.on(
+            Hls.Events.ERROR,
+            (event,data)=>{
+
+                console.log(
+                    "HLS ERROR:",
+                    data.type,
+                    data.details
+                );
+
+            }
+        );
 
         hls.loadSource(url);
 
         hls.attachMedia(player);
-
-        hls.on(
-            Hls.Events.MANIFEST_PARSED,
-            ()=>{
-
-                if(!isOffAir){
-
-                    player.play()
-                    .catch(()=>{});
-
-                }
-
-            }
-        );
 
     }else{
 
         player.src = url;
 
         if(!isOffAir){
-
+            
             player.play()
             .catch(()=>{});
 
@@ -190,6 +234,7 @@ onValue(
             return;
 
         }
+
 
         /*
         -------------------------
@@ -250,47 +295,81 @@ onValue(
         TIME SYNC
         -------------------------
         */
+/*
+        if(room.currentTime !== undefined){
 
-        const drift =
-        Math.abs(
-            player.currentTime -
-            (room.currentTime || 0)
-        );
+            console.log(
+                "HOST:",
+                room.currentTime,
+                "VIEWER:",
+                player.currentTime
+            );
 
-        if(
-            room.currentTime &&
-            drift > 10
-        ){
-
-            player.currentTime =
+            lastHostTime =
             room.currentTime;
 
-        }
+            const drift =
+            Math.abs(
+                player.currentTime -
+                room.currentTime
+            );
+
+            if(drift > 1){
+
+                player.currentTime =
+                room.currentTime;
+
+            }
+
+        }*/
 
     }
 );
+
+
 
 /*
 |--------------------------------------------------------------------------
 | FULLSCREEN
 |--------------------------------------------------------------------------
 */
+fullscreenBtn?.addEventListener(
+    "click",
+    async ()=>{
+
+        try{
+
+            const videoFrame =
+            document.querySelector(".video-frame");
+
+            if(!document.fullscreenElement){
+
+                await videoFrame
+                .requestFullscreen();
+
+            }else{
+
+                await document
+                .exitFullscreen();
+
+            }
+
+        }catch(err){
+
+            console.error(
+                "Fullscreen Error:",
+                err
+            );
+
+        }
+
+    }
+);
 
 fullscreenBtn?.addEventListener(
     "click",
     ()=>{
-
-        if(!document.fullscreenElement){
-
-            player.requestFullscreen()
-            .catch(()=>{});
-
-        }else{
-
-            document.exitFullscreen();
-
-        }
-
+        console.log("FULLSCREEN CLICK");
     }
 );
 
@@ -304,10 +383,8 @@ player.addEventListener(
     "seeking",
     ()=>{
 
-        console.log(
-            "SYNC SEEK:",
-            player.currentTime
-        );
+        player.currentTime =
+        lastHostTime;
 
     }
 );
@@ -315,3 +392,70 @@ player.addEventListener(
 console.log(
     "WATCH READY"
 );
+
+player.addEventListener(
+    "click",
+    e=>{
+
+        e.preventDefault();
+
+    }
+);
+
+document.addEventListener(
+    "keydown",
+    e=>{
+
+        const blocked = [
+
+            " ",
+            "ArrowLeft",
+            "ArrowRight",
+            "ArrowUp",
+            "ArrowDown",
+            "MediaPlayPause"
+
+        ];
+
+        if(blocked.includes(e.key)){
+
+            e.preventDefault();
+
+        }
+
+    }
+);
+
+player.addEventListener(
+    "contextmenu",
+    e=>{
+
+        e.preventDefault();
+
+    }
+);
+
+player.addEventListener(
+    "pause",
+    ()=>{
+
+        if(!isOffAir){
+
+            player.play()
+            .catch(()=>{});
+
+        }
+
+    }
+);
+
+player.addEventListener(
+    "ratechange",
+    ()=>{
+
+        player.playbackRate = 1;
+
+    }
+);
+
+

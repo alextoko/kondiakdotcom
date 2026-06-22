@@ -4,7 +4,8 @@ import {
     ref,
     set,
     update,
-    onDisconnect
+    onDisconnect,
+    onValue
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const ROOM_ID = "2451";
@@ -23,6 +24,33 @@ onDisconnect(hostRef).set({
     online:false
 });
 
+const viewersRef =
+ref(
+    db,
+    `rooms/${ROOM_ID}/viewers`
+);
+
+const viewerCountEl =
+document.getElementById("viewerCount");
+
+onValue(
+    viewersRef,
+    (snapshot)=>{
+
+        const viewers =
+        snapshot.val();
+
+        const count =
+        viewers
+        ? Object.keys(viewers).length
+        : 0;
+
+        viewerCountEl.textContent =
+        count;
+
+    }
+);
+
 const player = document.getElementById("programPlayer");
 const previewPlayer =
 document.getElementById("previewPlayer");
@@ -35,7 +63,6 @@ let liveInput = 0;
 let isOnAir = false;
 let previewHls = null;
 
-const inputUrl = document.getElementById("inputUrl");
 
 
 const onAirBtn = document.getElementById("onAirBtn");
@@ -60,7 +87,7 @@ let hls = null;
 
 const inputs = [
 
-    "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+    "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
 
     "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
 
@@ -255,31 +282,19 @@ takeBtn.addEventListener(
             }
         );
 
-    }
-);
+        document
+        .querySelectorAll(".input-card")
+        .forEach(card=>card.classList.remove("on-air"));
 
-/*
-|--------------------------------------------------------------------------
-| LOAD CUSTOM URL
-|--------------------------------------------------------------------------
-*/
-inputUrl.addEventListener(
-    "keydown",
-    (e)=>{
-
-        if(e.key !== "Enter") return;
-
-        const url =
-        inputUrl.value.trim();
-
-        if(!url) return;
-
-        inputs[previewInput] = url;
-
-        loadPreview(url);
+        document
+        .querySelector(
+            `.input-card[data-input="${liveInput}"]`
+        )
+        ?.classList.add("on-air");
 
     }
 );
+
 
 /*
 |--------------------------------------------------------------------------
@@ -379,6 +394,7 @@ onAirBtn.onclick = async()=>{
 | SYNC POSITION
 |--------------------------------------------------------------------------
 */
+
 setInterval(async()=>{
 
     if(player.paused) return;

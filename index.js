@@ -1,16 +1,17 @@
 document
-.querySelectorAll(".input-card")
-.forEach(card=>{
+.querySelectorAll(".input-card .thumb")
+.forEach(thumb => {
 
-    card.addEventListener("click",()=>{
+    thumb.addEventListener("click", () => {
+
+        const card = thumb.closest(".input-card");
 
         document
         .querySelectorAll(".input-card")
-        .forEach(i=>i.classList.remove("active"));
+        .forEach(i => i.classList.remove("active"));
 
         card.classList.add("active");
 
     });
 
 });
-
