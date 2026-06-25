@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NOBAR HOST</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<script type="module" src="js/firebase.js"></script>
+
+<script type="module" src="js/host.js"></script>
+
+</head>
+<body>
+
+<header>
+
+<div class="logo">
+    NOBAR HOST
+</div>
+
+<div class="room-info">
+    <span id="roomDisplay">Room: -</span>
+    <span id="onlineCount">Online: -</span>
+</div>
+
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+    <div id="hostPanel">
+
+        <h3>Buat Room</h3>
+
+        <input
+        type="text"
+        id="hostName"
+        placeholder="Nama Host">
+
+        <input
+        type="text"
+        id="roomId"
+        placeholder="Room ID">
+
+        <input
+        type="password"
+        id="roomPassword"
+        placeholder="Password Room">
+
+        <input
+        type="text"
+        id="videoUrl"
+        placeholder="Link Film">
+
+        <button id="createRoomBtn">
+            Buat Room
+        </button>
+
+        <button id="endRoomBtn"
+            style="display:none;">
+            Akhiri Room
+        </button>
+
+        <hr>
+
+    </div>
+
+</div>
+
+<div class="content">
+
+    <div class="video-wrapper">
+
+        <video
+        id="videoPlayer"
+        controls
+        playsinline
+        preload="metadata"
+        crossorigin="anonymous">
+        </video>
+
+        <div class="video-actions">
+
+            <button id="fullscreenBtn">
+                Fullscreen
+            </button>
+
+            <button id="copyRoomBtn">
+                Copy Link Room
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="bottom-section">
+
+        <div class="chat-card">
+
+            <div class="card-header">
+                Chat Room
+            </div>
+
+            <div
+            id="chatMessages"
+            class="chat-messages">
+            </div>
+
+            <div class="chat-input">
+
+                <input
+                type="text"
+                id="chatInput"
+                placeholder="Ketik pesan...">
+
+                <button id="sendMessageBtn">
+                    Kirim
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="user-card">
+
+            <div class="card-header">
+                Peserta Online
+            </div>
+
+            <div id="userList">
+
+                <div class="empty">
+                    Belum ada peserta
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<div id="loading" class="loading hidden">
+    <div class="spinner"></div>
+    <p>Menghubungkan...</p>
+</div>
+
+</body>
+</html>
